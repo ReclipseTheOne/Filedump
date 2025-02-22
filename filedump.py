@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FileDump - A utility to extract all files from a specified directory with optional filtering.
+FileDump - An utility to extract all the files from a specified directory with optional filtering.
 
 Usage:
     python filedump.py source_directory [destination_directory] [--filter PATTERN]
@@ -15,6 +15,7 @@ Arguments:
     source_directory     - The directory to extract files from (required)
     destination_directory - Where to save the extracted files (optional, defaults to current directory)
     --filter PATTERN     - Only include files matching this pattern (optional, supports glob patterns)
+    --flat               - Don't preserve directory structure, copy all files to the destination root
 
 Examples:
     python filedump.py ~/projects/my-mod
@@ -84,11 +85,11 @@ def save_projects(projects):
 def list_saved_projects():
     """List all saved projects."""
     projects = load_projects()
-    
+
     if not projects:
         print("No saved projects found.")
         return
-    
+
     print("Saved Projects:")
     for name, config in projects.items():
         filter_txt = f" (filter: {config['filter']})" if config.get('filter') else ""
@@ -99,7 +100,7 @@ def list_saved_projects():
 def save_project(name, origin, dest, filter_pattern=None, preserve_structure=True):
     """Save a project configuration."""
     projects = load_projects()
-    
+
     # Create project config
     projects[name] = {
         "origin": origin,
@@ -107,7 +108,7 @@ def save_project(name, origin, dest, filter_pattern=None, preserve_structure=Tru
         "filter": filter_pattern,
         "preserve_structure": preserve_structure
     }
-    
+
     save_projects(projects)
     print(f"Project '{name}' saved successfully.")
 
@@ -347,18 +348,18 @@ def parse_arguments():
 def list_files(directory, pattern=None):
     """List all files in directory and subdirectories, with optional filtering."""
     all_files = []
-    
+
     for root, _, files in os.walk(directory):
         for file in files:
             file_path = os.path.join(root, file)
-            
+
             # Apply filter if provided
             if pattern:
                 if not glob.fnmatch.fnmatch(file, pattern):
                     continue
-            
+
             all_files.append(file_path)
-    
+
     return all_files
 
 
@@ -427,7 +428,7 @@ def format_size(size_in_bytes):
 
 def main():
     # Print the version and config file location
-    print(f"FileDump v1.2 - Project file: {CONFIG_FILE}")
+    print(f"FileDump v1.3 - Project file: {CONFIG_FILE}")
     print("-" * 50)
     
     args = parse_arguments()
